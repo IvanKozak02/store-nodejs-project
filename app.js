@@ -1,20 +1,28 @@
 const express = require('express');
 require('dotenv').config();
-const app = express();
+require('express-async-errors');
 const connectToDB = require('./db/connection');
 const notFound = require("./middlewares/not-found.middleware");
+const {router: productsRouter} = require('./routes/products.route')
+const errorHandler = require("./middlewares/error-handler.middleware");
+
+const app = express();
+
 
 // MIDDLEWARES
 app.use(express.json());
 
-//todo routes
+// ROUTES
+app.use('/api/v1/products/', productsRouter)
+
 
 app.use(notFound);
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
 
 const start = async () => {
     try {
-        //todo DB connection
         await connectToDB(process.env.MONGO_URI);
         console.log('CONNECTED TO DB...');
         app.listen(PORT, () => {
